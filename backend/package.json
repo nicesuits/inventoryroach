@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "roach": "cockroach start --insecure --store=inventory --listen-addr=localhost --http-addr=:9000",
-    "server": "nodemon server.js"
+    "koa": "nodemon server.js"
   },
   "license": "MIT",
   "dependencies": {
