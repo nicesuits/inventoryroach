@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { Component } from 'react';
+import IssueRow from './IssueRow';
+import './IssueTable.css';
 
-const IssueTable = () => {
-  return <div>This is a placeholder for IssueTable.</div>;
-};
+class IssueTable extends Component {
+  render() {
+    const issueRows = this.props.issues.map(issue => (
+      <IssueRow key={issue.id} issue={issue} />
+    ));
+    return (
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Owner</th>
+            <th>Created</th>
+            <th>Effort</th>
+            <th>Completion Date</th>
+            <th>Title</th>
+          </tr>
+        </thead>
+        <tbody>{issueRows}</tbody>
+      </table>
+    );
+  }
+}
 
 export default IssueTable;
