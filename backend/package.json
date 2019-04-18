@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "roach": "cockroach start --insecure --store=inventory --listen-addr=localhost --http-addr=:9000",
+    "server": "nodemon server.js"
   },
   "license": "MIT",
   "dependencies": {
@@ -12,5 +13,8 @@
     "koa-bodyparser": "^4.2.1",
     "koa-mount": "^4.0.0",
     "pg": "^7.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.11"
   }
 }
