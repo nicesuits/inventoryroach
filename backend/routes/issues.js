@@ -1,27 +1,13 @@
-const issues = [
-  {
-    id: 1,
-    status: 'Open',
-    owner: 'Ravan',
-    created: new Date('2016-08-15'),
-    effort: 5,
-    completionDate: undefined,
-    title: 'Error in console when clicking Add'
-  },
-  {
-    id: 2,
-    status: 'Assigned',
-    owner: 'Eddie',
-    created: new Date('2016-08-16'),
-    effort: 14,
-    completionDate: new Date('2016-08-30'),
-    title: 'Missing bottom border on panel'
-  }
-];
+const pg = require('pg');
+const config = {
+  user: 'leader',
+  host: 'localhost',
+  database: 'issuetracker'
+};
 
 module.exports = ({ issuesRouter }) => {
   issuesRouter.get('/issues', (ctx, next) => {
-    ctx.body = issues;
+    ctx.body = [];
   });
   issuesRouter.post('/issues', (ctx, next) => {
     const newIssue = ctx.request.body;
