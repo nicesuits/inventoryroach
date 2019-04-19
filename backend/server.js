@@ -2,6 +2,7 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const logger = require('koa-logger');
 const bodyparser = require('koa-bodyparser');
+const cors = require('@koa/cors');
 
 const app = new Koa();
 const router = new Router();
@@ -12,6 +13,7 @@ const issuesRoutes = require('./routes/issues');
 
 app.use(logger());
 app.use(bodyparser());
+app.use(cors());
 
 basicRoutes({ router });
 issuesRoutes({ issuesRouter });
@@ -32,5 +34,5 @@ app.use(async (ctx, next) => {
   }
 });
 
-const server = app.listen(3000);
+const server = app.listen(3001);
 module.exports = server;
