@@ -11,15 +11,27 @@ class IssueList extends Component {
     this.createIssue = this.createIssue.bind(this);
   }
 
-  createIssue(newIssue) {
-    const newIssues = this.state.issues.slice();
-    newIssue.id = this.state.issues.length + 1;
-    newIssues.push(newIssue);
-    this.setState({ issues: newIssues });
-  }
-
   componentDidMount() {
     this.loadData();
+  }
+
+  createIssue(newIssue) {
+    fetch('http://localhost:3001/api/v1/issues', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(newIssue)
+    })
+      .then(res => res.json())
+      .then(updatedIssue => {
+        updatedIssue.created = new Date(updatedIssue.created);
+        if (updatedIssue.completionDate)
+          updatedIssue.completionDate = new Date(updatedIssue.completionDate);
+        const newIssues = this.state.issues.concat(updatedIssue);
+        this.setState({ issues: newIssues });
+      })
+      .catch(err =>
+        console.log(`Error in sending data to server: ${err.message}`)
+      );
   }
 
   loadData() {
