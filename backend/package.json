@@ -5,6 +5,7 @@
   "scripts": {
     "koa": "nodemon server.js",
     "roach": "cockroach start --insecure --store=inventory --listen-addr=localhost --http-addr=:9000",
+    "seed": "cockroach sql --insecure < issues.sql",
     "test": "jest --watchAll"
   },
   "license": "MIT",

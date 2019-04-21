@@ -1,34 +1,53 @@
-const issues = [
-  {
-    id: 1,
-    status: 'Open',
-    owner: 'Ravan',
-    created: new Date('2016-08-15'),
-    effort: 5,
-    completionDate: undefined,
-    title: 'Error in console when clicking Add'
-  },
-  {
-    id: 2,
-    status: 'Assigned',
-    owner: 'Eddie',
-    created: new Date('2016-08-16'),
-    effort: 14,
-    completionDate: new Date('2016-08-30'),
-    title: 'Missing bottom border on panel'
-  }
-];
+const { Pool } = require('pg');
+const config = {
+  user: 'leader',
+  host: 'localhost',
+  database: 'issuetracker',
+  port: 26257
+};
 
 module.exports = ({ issuesRouter }) => {
-  issuesRouter.get('/issues', (ctx, next) => {
-    ctx.body = issues;
+  const pool = new Pool(config);
+  pool.on('error', (err, client) => {
+    console.error('Unexpected error on idle client', err);
+    process.exit(-1);
   });
-  issuesRouter.post('/issues', (ctx, next) => {
+
+  issuesRouter.get('/issues', async (ctx, next) => {
+    const client = await pool.connect();
+    try {
+      const res = await client.query('SELECT * FROM issues');
+      ctx.body = res.rows;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      client.release();
+    }
+  });
+  issuesRouter.post('/issues', async (ctx, next) => {
     const newIssue = ctx.request.body;
-    newIssue.id = issues.length + 1;
     newIssue.created = new Date();
     if (!newIssue.status) newIssue.status = 'New';
-    issues.push(newIssue);
-    ctx.body = issues;
+    if (!newIssue.effort) newIssue.effort = 5;
+    if (!newIssue.completionDate) newIssue.completionDate = null;
+    const client = await pool.connect();
+    try {
+      const res = await client.query(
+        'INSERT INTO issues(status, owner, created, effort, completion_date, title) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, status, owner, created, effort, completion_date, title',
+        [
+          newIssue.status,
+          newIssue.owner,
+          newIssue.created,
+          newIssue.effort,
+          newIssue.completionDate,
+          newIssue.title
+        ]
+      );
+      ctx.body = res.rows;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      client.release();
+    }
   });
 };
