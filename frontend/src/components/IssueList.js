@@ -15,6 +15,15 @@ class IssueList extends Component {
     this.loadData();
   }
 
+  componentDidUpdate(prevProps) {
+    const oldQuery = new URLSearchParams(prevProps.location.search);
+    const newQuery = new URLSearchParams(this.props.location.search);
+    if (oldQuery === newQuery) {
+      return;
+    }
+    this.loadData();
+  }
+
   createIssue(newIssue) {
     fetch('http://localhost:3001/api/v1/issues', {
       method: 'POST',
@@ -24,8 +33,8 @@ class IssueList extends Component {
       .then(res => res.json())
       .then(updatedIssue => {
         updatedIssue.created = new Date(updatedIssue.created);
-        if (updatedIssue.completionDate)
-          updatedIssue.completionDate = new Date(updatedIssue.completionDate);
+        if (updatedIssue.completion_date)
+          updatedIssue.completion_date = new Date(updatedIssue.completion_date);
         const newIssues = this.state.issues.concat(updatedIssue);
         this.setState({ issues: newIssues });
       })
@@ -35,18 +44,37 @@ class IssueList extends Component {
   }
 
   loadData() {
-    fetch('http://localhost:3001/api/v1/issues')
-      .then(res => res.json())
-      .then(data => {
-        data.forEach(issue => {
-          issue.created = new Date(issue.created);
-          if (issue.completion_date) {
-            issue.completion_date = new Date(issue.completion_date);
-          }
+    // console.log(this.props.location);
+    // const query = new URLSearchParams(this.props.location.search);
+    // let url = 'http://localhost:3001/api/v1/issues';
+    // switch (search) {
+    //   case '':
+    //     url = `http://localhost:3001/api/v1/issues`;
+    //     break;
+    //   default:
+    //     url = `http://localhost:3001/api/v1/issues${query}`;
+    //     break;
+    // }
+
+    fetch(
+      `http://localhost:3001/api/v1/issues?${this.props.location.query}`
+    ).then(res => {
+      if (res.ok) {
+        res.json().then(data => {
+          data.forEach(issue => {
+            issue.created = new Date(issue.created);
+            if (issue.completion_date) {
+              issue.completion_date = new Date(issue.completion_date);
+            }
+          });
+          this.setState({ issues: data });
         });
-        this.setState({ issues: data });
-      })
-      .catch(err => console.log(err));
+      } else {
+        res
+          .json()
+          .then(err => console.error(`Failed to fetch issues ${err.message}`));
+      }
+    });
   }
 
   render() {
