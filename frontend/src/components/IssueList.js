@@ -40,8 +40,8 @@ class IssueList extends Component {
       .then(data => {
         data.forEach(issue => {
           issue.created = new Date(issue.created);
-          if (issue.completionDate) {
-            issue.completionDate = new Date(issue.completionDate);
+          if (issue.completion_date) {
+            issue.completion_date = new Date(issue.completion_date);
           }
         });
         this.setState({ issues: data });

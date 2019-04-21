@@ -10,7 +10,7 @@ const IssueRow = props => {
       <td>{props.issue.effort}</td>
       <td>
         {props.issue.completion_date
-          ? new Date(props.issue.completion_date).toDateString()
+          ? props.issue.completion_date.toDateString()
           : ''}
       </td>
       <td>{props.issue.title}</td>
