@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Route, BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import IssueList from './components/IssueList';
 import IssueEdit from './components/IssueEdit';
@@ -8,9 +8,12 @@ import IssueNotFound from './components/IssueNotFound';
 export default () => {
   return (
     <BrowserRouter>
-      <Route exact path="/" component={IssueList} />
-      <Route exact path="/issueEdit" component={IssueEdit} />
-      <Route path="*" component={IssueNotFound} />
+      <Switch>
+        <Route exact path="/issues" component={IssueList} />
+        <Route exact path="/issues/:id" component={IssueEdit} />
+        <Redirect from="/" to="/issues" />
+        <Route path="*" component={IssueNotFound} />
+      </Switch>
     </BrowserRouter>
   );
 };
