@@ -1,9 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const IssueRow = props => {
   return (
     <tr>
-      <td>{props.issue.id.substring(10)}</td>
+      <td>
+        <Link to={`/issues/${props.issue.id}`}>
+          {props.issue.id.substring(10)}
+        </Link>
+      </td>
       <td>{props.issue.status}</td>
       <td>{props.issue.owner}</td>
       <td>{props.issue.created.toDateString()}</td>
