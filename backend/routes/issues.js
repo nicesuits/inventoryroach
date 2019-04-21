@@ -14,8 +14,18 @@ module.exports = ({ issuesRouter }) => {
   });
 
   issuesRouter.get('/issues', async (ctx, next) => {
+    const filter = {};
+    if (ctx.params.query) filter.status = ctx.params.query.status;
     const client = await pool.connect();
     try {
+      if (filter.status) {
+        const res = await client.query(
+          'SELECT * FROM issues WHERE status = $1',
+          filter.status
+        );
+        return (ctx.body = res.rows);
+      }
+
       const res = await client.query('SELECT * FROM issues');
       ctx.body = res.rows;
     } catch (err) {
@@ -30,7 +40,7 @@ module.exports = ({ issuesRouter }) => {
     newIssue.created = new Date();
     if (!newIssue.status) newIssue.status = 'New';
     if (!newIssue.effort) newIssue.effort = 5;
-    if (!newIssue.completionDate) newIssue.completionDate = null;
+    if (!newIssue.completion_date) newIssue.completion_date = null;
     const client = await pool.connect();
     try {
       const res = await client.query(
@@ -40,7 +50,7 @@ module.exports = ({ issuesRouter }) => {
           newIssue.owner,
           newIssue.created,
           newIssue.effort,
-          newIssue.completionDate,
+          newIssue.completion_date,
           newIssue.title
         ]
       );
