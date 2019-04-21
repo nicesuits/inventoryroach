@@ -6,25 +6,6 @@ const config = {
   port: 26257
 };
 
-// const issues = [
-//   {
-//     status: 'Open',
-//     owner: 'Ravan',
-//     created: new Date('2016-08-15'),
-//     effort: 5,
-//     completionDate: undefined,
-//     title: 'Error in console when clicking Add'
-//   },
-//   {
-//     status: 'Assigned',
-//     owner: 'Eddie',
-//     created: new Date('2016-08-16'),
-//     effort: 14,
-//     completionDate: new Date('2016-08-30'),
-//     title: 'Missing bottom border on panel'
-//   }
-// ];
-
 module.exports = ({ issuesRouter }) => {
   const pool = new Pool(config);
   pool.on('error', (err, client) => {
@@ -32,24 +13,41 @@ module.exports = ({ issuesRouter }) => {
     process.exit(-1);
   });
 
-  issuesRouter.get('/issues', (ctx, next) => {
-    (async () => {
-      const client = await pool.connect();
-      try {
-        const res = await client.query('SELECT * FROM issues');
-        console.log(res.rows);
-        ctx.body = res.rows;
-      } finally {
-        client.release();
-      }
-    })().catch(e => console.log(e.stack));
+  issuesRouter.get('/issues', async (ctx, next) => {
+    const client = await pool.connect();
+    try {
+      const res = await client.query('SELECT * FROM issues');
+      ctx.body = res.rows;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      client.release();
+    }
   });
-  issuesRouter.post('/issues', (ctx, next) => {
-    // const newIssue = ctx.request.body;
-    // newIssue.id = issues.length + 1;
-    // newIssue.created = new Date();
-    // if (!newIssue.status) newIssue.status = 'New';
-    // issues.push(newIssue);
-    ctx.body = 'issues';
+  issuesRouter.post('/issues', async (ctx, next) => {
+    const newIssue = ctx.request.body;
+    newIssue.created = new Date();
+    if (!newIssue.status) newIssue.status = 'New';
+    if (!newIssue.effort) newIssue.effort = 5;
+    if (!newIssue.completionDate) newIssue.completionDate = null;
+    const client = await pool.connect();
+    try {
+      const res = await client.query(
+        'INSERT INTO issues(status, owner, created, effort, completion_date, title) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, status, owner, created, effort, completion_date, title',
+        [
+          newIssue.status,
+          newIssue.owner,
+          newIssue.created,
+          newIssue.effort,
+          newIssue.completionDate,
+          newIssue.title
+        ]
+      );
+      ctx.body = res.rows;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      client.release();
+    }
   });
 };
