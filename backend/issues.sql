@@ -5,12 +5,12 @@ GRANT ALL ON DATABASE issuetracker TO leader;
 
 CREATE TABLE IF NOT EXISTS issuetracker.issues (
   id SERIAL PRIMARY KEY,
-  status STRING,
-  owner STRING,
+  status STRING DEFAULT NULL,
+  owner STRING DEFAULT NULL,
   created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-  effort INT,
-  completion_date TIMESTAMPTZ,
-  title STRING
+  effort INT DEFAULT NULL,
+  completion_date TIMESTAMPTZ DEFAULT NULL,
+  title STRING DEFAULT NULL
 );
 
 INSERT INTO issuetracker.issues (status, owner, created, effort, completion_date, title) VALUES 
