@@ -20,6 +20,7 @@ module.exports = ({ issuesRouter }) => {
       ctx.body = res.rows;
     } catch (err) {
       console.log(err);
+      res.status(500).json({ message: `Internal Server Error: ${error}` });
     } finally {
       client.release();
     }
@@ -46,6 +47,7 @@ module.exports = ({ issuesRouter }) => {
       ctx.body = res.rows;
     } catch (err) {
       console.log(err);
+      res.status(500).json({ message: `Internal Server Error: ${error}` });
     } finally {
       client.release();
     }
