@@ -26,17 +26,24 @@ app.use(cors());
 app.get('/api/v1/issues', async (req, res) => {
   const client = await pool.connect();
   try {
-    const results = await client.query('SELECT * FROM issues');
-    res.json(results.rows);
+    if (req.query.assigned !== undefined) {
+      const results = await client.query(
+        'SELECT * FROM issues WHERE status = $1',
+        [req.query.assigned]
+      );
+      return res.json(results.rows);
+    } else {
+      const results = await client.query('SELECT * FROM issues');
+      return res.json(results.rows);
+    }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: `Internal Server Error: ${error}` });
+    return res.status(500).json({ message: `Internal Server Error: ${error}` });
   } finally {
     client.release();
   }
 });
 app.post('/api/v1/issues', async (req, res) => {
-  console.log(req.body);
   const newIssue = req.body;
   newIssue.created = new Date();
   if (!newIssue.status) newIssue.status = 'New';
@@ -55,10 +62,10 @@ app.post('/api/v1/issues', async (req, res) => {
         newIssue.title
       ]
     );
-    res.json(results.rows);
+    return res.json(results.rows);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: `Internal Server Error: ${error}` });
+    return res.status(500).json({ message: `Internal Server Error: ${error}` });
   } finally {
     client.release();
   }
