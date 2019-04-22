@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 class IssueAdd extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
