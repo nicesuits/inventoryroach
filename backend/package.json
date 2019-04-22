@@ -3,19 +3,17 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "koa": "nodemon server.js",
+    "express": "nodemon server.js",
     "roach": "cockroach start --insecure --store=inventory --listen-addr=localhost --http-addr=:9000",
     "seed": "cockroach sql --insecure < issues.sql",
     "test": "jest --watchAll"
   },
   "license": "MIT",
   "dependencies": {
-    "@koa/cors": "^2.2.3",
-    "koa": "^2.7.0",
-    "koa-bodyparser": "^4.2.1",
-    "koa-logger": "^3.2.0",
-    "koa-mount": "^4.0.0",
-    "koa-router": "^7.4.0",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
     "pg": "^7.10.0"
   },
   "devDependencies": {
