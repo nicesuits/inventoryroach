@@ -5,19 +5,24 @@ import IssueFilter from './IssueFilter';
 import IssueTable from './IssueTable';
 
 class IssueList extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = { issues: [] };
     this.createIssue = this.createIssue.bind(this);
+    this.updateList = this.updateList.bind(this);
   }
 
   componentDidMount() {
     this.loadData();
   }
 
+  updateList() {
+    this.loadData();
+  }
+
   componentDidUpdate(prevProps) {
-    const oldQuery = new URLSearchParams(prevProps.location.search);
-    const newQuery = new URLSearchParams(this.props.location.search);
+    const oldQuery = prevProps.location.search;
+    const newQuery = this.props.location.search;
     if (oldQuery === newQuery) {
       return;
     }
