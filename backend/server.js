@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const morgan = require('morgan');
-const { Pool } = require('pg');
+
+const pg = require('pg');
 const config = {
   user: 'leader',
   host: 'localhost',
@@ -10,7 +10,7 @@ const config = {
   port: 26257
 };
 
-const pool = new Pool(config);
+const pool = new pg.Pool(config);
 pool.on('error', (err, client) => {
   console.error('Unexpected error on idle client', err);
   process.exit(-1);
@@ -18,7 +18,6 @@ pool.on('error', (err, client) => {
 
 const app = express();
 
-morgan('tiny');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -31,14 +30,14 @@ app.get('/api/v1/issues', async (req, res) => {
         'SELECT * FROM issues WHERE status = $1',
         [req.query.assigned]
       );
-      return res.json(results.rows);
+      res.json(results.rows);
     } else {
       const results = await client.query('SELECT * FROM issues');
-      return res.json(results.rows);
+      res.json(results.rows);
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: `Internal Server Error: ${error}` });
+    res.status(500).json({ message: `Internal Server Error: ${error}` });
   } finally {
     client.release();
   }
