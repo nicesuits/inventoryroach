@@ -25,7 +25,7 @@ class IssueList extends Component {
   }
 
   createIssue(newIssue) {
-    fetch('http://localhost:3001/api/v1/issues', {
+    fetch('http://localhost:3000/api/v1/issues', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(newIssue)
@@ -44,20 +44,8 @@ class IssueList extends Component {
   }
 
   loadData() {
-    // console.log(this.props.location);
-    // const query = new URLSearchParams(this.props.location.search);
-    // let url = 'http://localhost:3001/api/v1/issues';
-    // switch (search) {
-    //   case '':
-    //     url = `http://localhost:3001/api/v1/issues`;
-    //     break;
-    //   default:
-    //     url = `http://localhost:3001/api/v1/issues${query}`;
-    //     break;
-    // }
-
     fetch(
-      `http://localhost:3001/api/v1/issues?${this.props.location.query}`
+      `http://localhost:3000/api/v1/issues${this.props.location.search}`
     ).then(res => {
       if (res.ok) {
         res.json().then(data => {
