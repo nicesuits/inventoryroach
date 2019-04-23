@@ -25,16 +25,33 @@ app.use(cors());
 app.get('/api/v1/issues', async (req, res) => {
   const client = await pool.connect();
   try {
-    if (req.query.assigned !== undefined) {
-      const results = await client.query(
-        'SELECT * FROM issues WHERE status = $1',
-        [req.query.assigned]
-      );
-      res.json(results.rows);
+    const filter = {};
+    if (req.query.status) filter.status = req.query.status;
+    if (req.query.effort_lte) filter.effort_lte = req.query.effort_lte;
+    if (req.query.effort_gte) filter.effort_gte = req.query.effort_gte;
+    if (req.query.effort_lte)
+      filter.effort_lte = parseInt(req.query.effort_lte, 10);
+    if (req.query.effort_gte)
+      filter.effort_gte = parseInt(req.query.effort_gte, 10);
+
+    let query = '';
+    if (filter.status === undefined) {
+      query = 'SELECT * FROM issues';
     } else {
-      const results = await client.query('SELECT * FROM issues');
-      res.json(results.rows);
+      query = 'SELECT * FROM issues WHERE status = $1';
     }
+    if (filter.effort_lte || filter.effort_gte) {
+      if (filter.effort_lte && filter.effort_gte === undefined) {
+        query += ' AND effort < $2';
+      } else if (filter.effort_lte === undefined && filter.effort_gte) {
+        query += ' AND effort > $2';
+      } else {
+        query += ' AND effort < $2 AND effort > $3';
+      }
+    }
+    const params = Object.values(filter);
+    const results = await client.query(query, params);
+    res.json(results.rows);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: `Internal Server Error: ${error}` });
