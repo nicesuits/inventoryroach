@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const issuesRouter = require('express').Router();
 const db = require('../db');
 
@@ -11,7 +12,24 @@ issuesRouter.get('/api/v1/issues', async (req, res) => {
   }
 });
 issuesRouter.post('/api/v1/issues', async (req, res) => {
+  const schema = {
+    owner: Joi.string()
+      .min(1)
+      .max(255)
+      .required(),
+    title: Joi.string()
+      .min(1)
+      .max(512)
+      .required()
+  };
+  const validateResult = Joi.validate(req.body, schema);
   const newIssue = req.body;
+
+  if (validateResult.error) {
+    res.status(400).send(validateResult.error.details[0].message);
+    return;
+  }
+
   newIssue.created = new Date();
   if (!newIssue.status) newIssue.status = 'New';
   if (!newIssue.effort) newIssue.effort = 5;
