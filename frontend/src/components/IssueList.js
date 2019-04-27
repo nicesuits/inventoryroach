@@ -9,14 +9,9 @@ class IssueList extends Component {
     super(props);
     this.state = { issues: [] };
     this.createIssue = this.createIssue.bind(this);
-    this.updateList = this.updateList.bind(this);
   }
 
   componentDidMount() {
-    this.loadData();
-  }
-
-  updateList() {
     this.loadData();
   }
 
