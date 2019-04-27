@@ -1,10 +1,60 @@
 const Joi = require('joi');
 const Router = require('express-promise-router');
 const db = require('../db');
+const issuesRouter = new Router();
+
+const calculateQuery = params => {
+  console.log(params);
+  const keys = Object.keys(params);
+  const values = Object.values(params);
+  let count = 0;
+  if (keys.length === 0) count += 0;
+  if (params['status']) count += 1;
+  if (params['gt']) count += 2;
+  if (params['lt']) count += 4;
+  return count;
+};
+
+const generateQuery = count => {
+  let query = 'SELECT * FROM issues';
+  switch (count) {
+    case 1:
+      query += ' WHERE status = $1';
+      break;
+    case 2:
+      query += ' WHERE effort > $1';
+      break;
+    case 3:
+      query += ' WHERE status = $1 AND effort > $2';
+      break;
+    case 4:
+      query += ' WHERE effort < $1';
+      break;
+    case 5:
+      query += ' WHERE status = $1 AND effort < $2';
+      break;
+    case 6:
+      query += ' WHERE effort > $1 AND effort < $2';
+      break;
+    case 7:
+      query += ' WHERE status = $1 AND effort > $2 AND effort < $3';
+      break;
+    default:
+      query += '';
+      break;
+  }
+  return query;
+};
 
 issuesRouter.get('/api/v1/issues', async (req, res) => {
   try {
-    const results = await db.query('SELECT * FROM issues');
+    const paramRequests = await calculateQuery(req.query);
+    console.log(paramRequests);
+    const text = await generateQuery(paramRequests);
+    const values = Object.values(req.query);
+    console.log(text);
+    console.log(values);
+    const results = await db.query(text, values);
     res.json(results.rows);
   } catch (err) {
     console.log(err);
