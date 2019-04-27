@@ -11,9 +11,7 @@ class IssueAdd extends Component {
     const form = document.forms.issueAdd;
     this.props.createIssue({
       owner: form.owner.value,
-      title: form.title.value,
-      status: 'New',
-      created: new Date()
+      title: form.title.value
     });
     form.owner.value = '';
     form.title.value = '';
