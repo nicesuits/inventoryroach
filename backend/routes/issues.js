@@ -36,7 +36,7 @@ issuesRouter.post('/api/v1/issues', async (req, res) => {
   if (!newIssue.completion_date) newIssue.completion_date = null;
   try {
     const results = await db.query(
-      'INSERT INTO issues(status, owner, created, effort, completion_date, title) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, status, owner, created, effort, completion_date, title',
+      'INSERT INTO issues(status, owner, created, effort, completion_date, title) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
       [
         newIssue.status,
         newIssue.owner,
