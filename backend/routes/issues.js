@@ -49,11 +49,8 @@ const generateQuery = count => {
 issuesRouter.get('/api/v1/issues', async (req, res) => {
   try {
     const paramRequests = await calculateQuery(req.query);
-    console.log(paramRequests);
     const text = await generateQuery(paramRequests);
     const values = Object.values(req.query);
-    console.log(text);
-    console.log(values);
     const results = await db.query(text, values);
     res.json(results.rows);
   } catch (err) {
