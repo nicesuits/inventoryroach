@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const issuesRouter = require('express').Router();
+const Router = require('express-promise-router');
 const db = require('../db');
 
 issuesRouter.get('/api/v1/issues', async (req, res) => {
