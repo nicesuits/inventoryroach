@@ -1,55 +1,13 @@
 const Joi = require('joi');
 const Router = require('express-promise-router');
 const db = require('../db');
+const utils = require('../utils/utils');
 const issuesRouter = new Router();
-
-const calculateQuery = params => {
-  console.log(params);
-  const keys = Object.keys(params);
-  const values = Object.values(params);
-  let count = 0;
-  if (keys.length === 0) count += 0;
-  if (params['status']) count += 1;
-  if (params['gt']) count += 2;
-  if (params['lt']) count += 4;
-  return count;
-};
-
-const generateQuery = count => {
-  let query = 'SELECT * FROM issues';
-  switch (count) {
-    case 1:
-      query += ' WHERE status = $1';
-      break;
-    case 2:
-      query += ' WHERE effort > $1';
-      break;
-    case 3:
-      query += ' WHERE status = $1 AND effort > $2';
-      break;
-    case 4:
-      query += ' WHERE effort < $1';
-      break;
-    case 5:
-      query += ' WHERE status = $1 AND effort < $2';
-      break;
-    case 6:
-      query += ' WHERE effort > $1 AND effort < $2';
-      break;
-    case 7:
-      query += ' WHERE status = $1 AND effort > $2 AND effort < $3';
-      break;
-    default:
-      query += '';
-      break;
-  }
-  return query;
-};
 
 issuesRouter.get('/api/v1/issues', async (req, res) => {
   try {
-    const paramRequests = await calculateQuery(req.query);
-    const text = await generateQuery(paramRequests);
+    const paramRequests = await utils.calculateQuery(req.query);
+    const text = await utils.generateQuery(paramRequests);
     const values = Object.values(req.query);
     const results = await db.query(text, values);
     res.json(results.rows);
@@ -60,14 +18,12 @@ issuesRouter.get('/api/v1/issues', async (req, res) => {
 });
 issuesRouter.post('/api/v1/issues', async (req, res) => {
   const schema = {
-    owner: Joi.string()
-      .min(1)
-      .max(255)
-      .required(),
-    title: Joi.string()
-      .min(1)
-      .max(512)
-      .required()
+    owner: Joi.string(),
+    title: Joi.string(),
+    status: Joi.string(),
+    effort: Joi.number(),
+    created: Joi.date(),
+    completion_date: Joi.date()
   };
   const validateResult = Joi.validate(req.body, schema);
   const newIssue = req.body;
@@ -77,7 +33,7 @@ issuesRouter.post('/api/v1/issues', async (req, res) => {
     return;
   }
 
-  newIssue.created = new Date();
+  if (!newIssue.created) newIssue.created = new Date();
   if (!newIssue.status) newIssue.status = 'New';
   if (!newIssue.effort) newIssue.effort = 5;
   if (!newIssue.completion_date) newIssue.completion_date = null;
