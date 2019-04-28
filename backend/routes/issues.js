@@ -75,7 +75,7 @@ issuesRouter.post('/api/v1/issues', async (req, res) => {
     return;
   }
 
-  newIssue.created = new Date();
+  if (!newIssue.created) newIssue.created = new Date();
   if (!newIssue.status) newIssue.status = 'New';
   if (!newIssue.effort) newIssue.effort = 5;
   if (!newIssue.completion_date) newIssue.completion_date = null;
