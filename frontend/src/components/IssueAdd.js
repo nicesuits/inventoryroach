@@ -10,8 +10,8 @@ class IssueAdd extends Component {
     e.preventDefault();
     const form = document.forms.issueAdd;
     this.props.createIssue({
-      owner: form.owner.value,
-      title: form.title.value
+      owner: form.owner.value || 'Test Owner',
+      title: form.title.value || 'Test Title'
     });
     form.owner.value = '';
     form.title.value = '';
