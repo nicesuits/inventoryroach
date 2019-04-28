@@ -60,14 +60,12 @@ issuesRouter.get('/api/v1/issues', async (req, res) => {
 });
 issuesRouter.post('/api/v1/issues', async (req, res) => {
   const schema = {
-    owner: Joi.string()
-      .min(1)
-      .max(255)
-      .required(),
-    title: Joi.string()
-      .min(1)
-      .max(512)
-      .required()
+    owner: Joi.string(),
+    title: Joi.string(),
+    status: Joi.string(),
+    effort: Joi.number(),
+    created: Joi.date(),
+    completion_date: Joi.date()
   };
   const validateResult = Joi.validate(req.body, schema);
   const newIssue = req.body;
